@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بوابة الخدمات الإلكترونية | كلية تكنولوجيا العلوم الصحية التطبيقية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A322F;
+    --teal:#0F4A44;
+    --teal-2:#156358;
+    --teal-soft:#1D7A6C;
+    --gold:#C9A227;
+    --gold-light:#E8CE7A;
+    --paper:#F6F2E7;
+    --paper-2:#EEE7D6;
+    --text-dark:#1C2420;
+    --text-mute:#5C6862;
+    --line:#DCD3B8;
+    --brick:#A8452C;
+    --shadow: 0 20px 50px -20px rgba(10,50,47,.35);
+    --ease: cubic-bezier(.22,.9,.32,1);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Tajawal', sans-serif;
+    background:var(--paper);
+    color:var(--text-dark);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+  h1,h2,h3,.display{ font-family:'Cairo', sans-serif; }
+
+  /* ---------- ambient geometric background ---------- */
+  .bg-pattern{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(201,162,39,.10), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(21,99,88,.14), transparent 45%);
+  }
+  .bg-pattern svg{ position:absolute; inset:0; width:100%; height:100%; opacity:.05; }
+
+  /* ---------- LOGIN SCREEN ---------- */
+  .login-screen{
+    position:fixed; inset:0; z-index:50;
+    display:flex; align-items:center; justify-content:center;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(232,206,122,.16), transparent 55%),
+      linear-gradient(160deg, var(--ink) 0%, var(--teal) 55%, var(--teal-2) 100%);
+    transition: opacity .9s var(--ease), visibility .9s var(--ease);
+  }
+  .login-screen.leaving{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .login-card{
+    position:relative;
+    width:min(400px, 90vw);
+    background:rgba(246,242,231,.06);
+    border:1px solid rgba(232,206,122,.25);
+    backdrop-filter: blur(14px);
+    border-radius:22px;
+    padding:44px 36px 36px;
+    text-align:center;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.55);
+    animation: rise-in .9s var(--ease) both;
+  }
+  @keyframes rise-in{
+    from{ opacity:0; transform:translateY(28px) scale(.96); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  .login-card.shake{ animation: shake .5s var(--ease); }
+  @keyframes shake{
+    10%,90%{ transform:translateX(-2px); }
+    20%,80%{ transform:translateX(4px); }
+    30%,50%,70%{ transform:translateX(-8px); }
+    40%,60%{ transform:translateX(8px); }
+  }
+
+  .seal-wrap{ width:120px; height:120px; margin:0 auto 18px; }
+  .seal-ring{ transform-origin:100px 100px; animation: rotate-slow 50s linear infinite; }
+  @keyframes rotate-slow{ to{ transform:rotate(360deg); } }
+
+  .login-kicker{
+    color:var(--gold-light); font-size:12px; letter-spacing:3px; font-weight:500;
+    text-transform:uppercase; margin-bottom:6px; opacity:.85;
+  }
+  .login-title{ color:var(--paper); font-size:20px; font-weight:700; line-height:1.6; margin-bottom:4px; }
+  .login-sub{ color:rgba(246,242,231,.6); font-size:13px; margin-bottom:28px; }
+
+  .pw-field{ position:relative; margin-bottom:14px; }
+  .pw-field input{
+    width:100%;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(232,206,122,.3);
+    border-radius:12px;
+    padding:15px 46px 15px 16px;
+    font-family:'Tajawal', sans-serif;
+    font-size:20px; letter-spacing:6px; text-align:center;
+    color:var(--paper);
+    outline:none;
+    transition: border-color .3s, box-shadow .3s, background .3s;
+  }
+  .pw-field input::placeholder{ letter-spacing:normal; font-size:14px; color:rgba(246,242,231,.4); }
+  .pw-field input:focus{
+    border-color:var(--gold);
+    background:rgba(255,255,255,.09);
+    box-shadow:0 0 0 4px rgba(201,162,39,.15);
+  }
+  .pw-icon{
+    position:absolute; right:16px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; opacity:.55;
+  }
+
+  .login-error{
+    color:#E8967C; font-size:12.5px; height:16px; margin-bottom:10px;
+    opacity:0; transition:opacity .25s;
+  }
+  .login-error.show{ opacity:1; }
+
+  .btn-enter{
+    width:100%; border:none; cursor:pointer;
+    background:linear-gradient(135deg, var(--gold-light), var(--gold));
+    color:#26210A; font-family:'Cairo', sans-serif; font-weight:700; font-size:15px;
+    padding:14px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+  }
+  .btn-enter:hover{ transform:translateY(-2px); box-shadow:0 12px 24px -10px rgba(201,162,39,.6); }
+  .btn-enter:active{ transform:translateY(0); }
+  .btn-enter svg{ width:16px; height:16px; transition:transform .25s; }
+  .btn-enter:hover svg{ transform:translateX(-3px); }
+
+  .login-foot{ margin-top:20px; font-size:11.5px; color:rgba(246,242,231,.4); }
+
+  /* ---------- DASHBOARD ---------- */
+  .dashboard{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 28px 70px; }
+  .dashboard.hidden{ display:none; }
+  .dashboard.entering .dash-header,
+  .dashboard.entering .portal-section{ animation: fade-up .8s var(--ease) both; }
+  @keyframes fade-up{ from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+
+  .dash-header{
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:44px 0 34px; border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .header-id{ display:flex; align-items:center; gap:18px; }
+  .seal-wrap.small{ width:72px; height:72px; flex-shrink:0; }
+  .head-text .kicker{
+    color:var(--gold); font-size:12px; letter-spacing:2.5px; font-weight:600;
+    text-transform:uppercase; margin-bottom:4px;
+  }
+  .head-text h1{ font-size:clamp(19px,2.4vw,26px); font-weight:800; color:var(--ink); line-height:1.4; }
+  .head-text .sub{ color:var(--text-mute); font-size:13.5px; margin-top:3px; }
+
+  .btn-logout{
+    display:flex; align-items:center; gap:7px;
+    background:transparent; border:1px solid var(--line); color:var(--text-mute);
+    font-family:'Tajawal'; font-size:13px; padding:9px 16px; border-radius:10px;
+    cursor:pointer; transition:.25s var(--ease);
+  }
+  .btn-logout:hover{ border-color:var(--brick); color:var(--brick); background:rgba(168,69,44,.06); }
+  .btn-logout svg{ width:14px; height:14px; }
+
+  .portal-section{ padding-top:46px; animation-delay:.1s; }
+  .portal-section + .portal-section{ animation-delay:.22s; }
+  .section-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:22px; }
+  .eyebrow{
+    font-family:'Cairo'; font-weight:800; font-size:13px; color:var(--paper);
+    background:var(--teal-2); padding:5px 12px; border-radius:7px; letter-spacing:.5px;
+    flex-shrink:0;
+  }
+  .section-head h2{ font-size:clamp(18px,2vw,22px); font-weight:800; color:var(--ink); }
+  .section-rule{ flex:1; height:1px; background:linear-gradient(to left, var(--line), transparent); }
+
+  .card-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; }
+
+  .card{
+    position:relative;
+    display:flex; align-items:flex-start; gap:14px;
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    padding:20px; text-decoration:none; color:inherit;
+    overflow:hidden;
+    transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+    opacity:0; transform:translateY(14px);
+    animation: card-in .6s var(--ease) forwards;
+  }
+  @keyframes card-in{ to{ opacity:1; transform:translateY(0); } }
+  .card::before{
+    content:''; position:absolute; inset:0; border-radius:16px;
+    background:linear-gradient(135deg, rgba(201,162,39,.08), transparent 60%);
+    opacity:0; transition:opacity .35s;
+  }
+  .card:hover{
+    transform:translateY(-5px);
+    box-shadow: var(--shadow);
+    border-color:var(--gold);
+  }
+  .card:hover::before{ opacity:1; }
+  .card:hover .card-icon{ transform:scale(1.08) rotate(-4deg); background:var(--teal); }
+  .card:hover .card-icon svg{ stroke:var(--gold-light); }
+  .card:hover .card-arrow{ transform:translateX(-4px); opacity:1; }
+
+  .card-icon{
+    flex-shrink:0; width:46px; height:46px; border-radius:12px;
+    background:var(--paper-2); display:flex; align-items:center; justify-content:center;
+    transition: transform .35s var(--ease), background .35s var(--ease);
+  }
+  .card-icon svg{ width:22px; height:22px; stroke:var(--teal-2); transition:stroke .35s; }
+
+  .card-body{ flex:1; min-width:0; }
+  .card-body h3{ font-size:15.5px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+  .card-body p{ font-size:12.5px; color:var(--text-mute); line-height:1.6; }
+
+  .card-arrow{
+    align-self:center; opacity:.35; transition:.3s var(--ease); flex-shrink:0;
+  }
+  .card-arrow svg{ width:15px; height:15px; stroke:var(--text-mute); }
+
+  .dash-footer{
+    margin-top:56px; padding-top:22px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-size:12px; color:var(--text-mute);
+  }
+  .dash-footer .gold-dot{ color:var(--gold); }
+
+  @media (max-width:560px){
+    .dash-header{ padding-top:32px; }
+    .login-card{ padding:36px 24px 28px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    .seal-ring{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-pattern">
+  <svg viewBox="0 0 800 800" preserveAspectRatio="none">
+    <defs>
+      <pattern id="geo" width="80" height="80" patternUnits="userSpaceOnUse">
+        <path d="M40 0 L80 40 L40 80 L0 40 Z" fill="none" stroke="#0F4A44" stroke-width="1"/>
+        <circle cx="40" cy="40" r="6" fill="none" stroke="#C9A227" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="800" height="800" fill="url(#geo)"/>
+  </svg>
+</div>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<section class="login-screen" id="loginScreen">
+  <div class="login-card" id="loginCard">
+    <div class="seal-wrap">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="96" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+        <circle cx="100" cy="100" r="86" fill="#0F4A44"/>
+        <g class="seal-ring">
+          <path id="ringPathLogin" d="M100,100 m-64,0 a64,64 0 1,1 128,0 a64,64 0 1,1 -128,0" fill="none"/>
+          <circle cx="100" cy="100" r="76" fill="none" stroke="#C9A227" stroke-width="1" stroke-dasharray="1 5"/>
+          <text font-family="Cairo" font-size="10.5" font-weight="600" fill="#E8CE7A" letter-spacing="1.5">
+            <textPath href="#ringPathLogin" startOffset="50%" text-anchor="middle">كلية تكنولوجيا العلوم الصحية التطبيقية</textPath>
+          </text>
+        </g>
+        <g fill="#E8CE7A">
+          <polygon points="100,68 132,80 100,92 68,80" />
+          <rect x="97" y="80" width="6" height="22" rx="2"/>
+          <circle cx="100" cy="106" r="3.5"/>
+          <path d="M78,84 v14 q22,10 44,0 v-14" fill="none" stroke="#E8CE7A" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+    <p class="login-kicker">بوابة الخدمات الإلكترونية</p>
+    <h1 class="login-title">كلية تكنولوجيا العلوم الصحية التطبيقية</h1>
+    <p class="login-sub">يرجى إدخال كلمة المرور للدخول إلى البوابة</p>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="pw-field">
+        <input type="password" id="pwInput" inputmode="numeric" maxlength="12" placeholder="كلمة المرور" required>
+        <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="#E8CE7A" stroke-width="2">
+          <rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </div>
+      <p class="login-error" id="loginError">كلمة المرور غير صحيحة، حاول مرة أخرى</p>
+      <button type="submit" class="btn-enter">
+        دخول البوابة
+        <svg viewBox="0 0 24 24" fill="none" stroke="#26210A" stroke-width="2.4" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+    </form>
+    <p class="login-foot">كلية تكنولوجيا العلوم الصحية التطبيقية — جامعة بني سويف</p>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<main class="dashboard hidden" id="dashboard">
+
+  <header class="dash-header">
+    <div class="header-id">
+      <div class="seal-wrap small">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="96" fill="none" stroke="#C9A227" stroke-width="2"/>
+          <circle cx="100" cy="100" r="86" fill="#0F4A44"/>
+          <g class="seal-ring">
+            <path id="ringPathDash" d="M100,100 m-64,0 a64,64 0 1,1 128,0 a64,64 0 1,1 -128,0" fill="none"/>
+            <circle cx="100" cy="100" r="76" fill="none" stroke="#C9A227" stroke-width="1" stroke-dasharray="1 5"/>
+            <text font-family="Cairo" font-size="10.5" font-weight="600" fill="#E8CE7A" letter-spacing="1.5">
+              <textPath href="#ringPathDash" startOffset="50%" text-anchor="middle">كلية تكنولوجيا العلوم الصحية التطبيقية</textPath>
+            </text>
+          </g>
+          <g fill="#E8CE7A">
+            <polygon points="100,68 132,80 100,92 68,80" />
+            <rect x="97" y="80" width="6" height="22" rx="2"/>
+            <circle cx="100" cy="106" r="3.5"/>
+            <path d="M78,84 v14 q22,10 44,0 v-14" fill="none" stroke="#E8CE7A" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="head-text">
+        <p class="kicker">بوابة الخدمات الإلكترونية</p>
+        <h1>كلية تكنولوجيا العلوم الصحية التطبيقية</h1>
+        <p class="sub">جامعة بني سويف — الأنظمة الإلكترونية لشئون الطلاب والخريجين</p>
+      </div>
+    </div>
+    <button class="btn-logout" id="logoutBtn">
+      تسجيل الخروج
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    </button>
+  </header>
+
+  <!-- SECTION 1 -->
+  <section class="portal-section">
+    <div class="section-head">
+      <span class="eyebrow">القسم الأول</span>
+      <h2>شئون الطلاب</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="card-grid" id="grid1"></div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="portal-section">
+    <div class="section-head">
+      <span class="eyebrow">القسم الثاني</span>
+      <h2>شئون الخريجين</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="card-grid" id="grid2"></div>
+  </section>
+
+  <footer class="dash-footer">
+    <span>© <span id="year"></span> كلية تكنولوجيا العلوم الصحية التطبيقية — جامعة بني سويف</span>
+    <span><span class="gold-dot">●</span> بوابة موحدة للأنظمة الإلكترونية</span>
+  </footer>
+</main>
+
+<script>
+  // ---- Icon library (inline SVG strings) ----
+  const ICONS = {
+    cert: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-2.5L17 21l-1.5-8.5"/></svg>`,
+    dashboard: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>`,
+    pen: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></svg>`,
+    chart: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>`,
+    chartSys: `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V12M11 20V6"/><circle cx="18" cy="7" r="3.2"/><path d="M18 10.2v1.5M16.5 8.8h3"/></svg>`,
+  };
+
+  const SECTION_1 = [
+    { title: "إثبات القيد", sub: "نظام شهادات القيد", desc: "إصدار وطباعة شهادات إثبات القيد للطلاب إلكترونيًا", icon: "cert", url: "https://ramadanmohammedeid.github.io/student-affairs-statement/" },
+    { title: "تقديمات البرنامج الخاص", sub: "لوحة الإدارة", desc: "متابعة ومراجعة طلبات الالتحاق بالبرنامج الخاص", icon: "dashboard", url: "https://ramadanmohammedeid.github.io/student-affairs-management-special-program/" },
+    { title: "التقديم للبرنامج الخاص", sub: "بوابة الطلاب", desc: "التقدّم بطلب الالتحاق بالبرنامج الخاص للطلاب", icon: "pen", url: "https://ramadanmohammedeid.github.io/special-program-college-Health-Sciences-Technology/" },
+  ];
+
+  const SECTION_2 = [
+    { title: "شهادة التخرج", sub: "لوحة إدارة شئون الخريجين", desc: "إصدار وإدارة شهادات التخرج للخريجين", icon: "dashboard", url: "https://ramadanmohammedeid.github.io/student-affairs-employ/" },
+    { title: "بيان الدرجات المعتمد", sub: "بعد مراجعة الكنترول", desc: "سجلّ الدرجات الموحّد بعد اعتماد الكنترول", icon: "chart", url: "https://ramadanmohammedeid.github.io/STATEMENT-OF-GRADES/" },
+    { title: "بيان الدرجات من السيستم", sub: "استخراج مباشر", desc: "سجلّ الدرجات الموحّد المستخرج مباشرة من النظام", icon: "chartSys", url: "https://ramadanmohammedeid.github.io/STATEMENT-OF-GRADES-FROM-SYSTEM/" },
+    { title: "إفادة تخرج", sub: "نظام إفادات التخرج", desc: "إصدار الإفادات الرسمية لحديثي التخرج", icon: "cert", url: "https://ramadanmohammedeid.github.io/EFADA/" },
+  ];
+
+  function renderCards(list, gridId, delayStart){
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = list.map((item, i) => `
+      <a class="card" href="${item.url}" target="_blank" rel="noopener" style="animation-delay:${delayStart + i * 0.09}s">
+        <span class="card-icon">${ICONS[item.icon]}</span>
+        <span class="card-body">
+          <h3>${item.title}</h3>
+          <p><strong style="color:var(--teal-2); font-weight:700;">${item.sub}</strong> — ${item.desc}</p>
+        </span>
+        <span class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </span>
+      </a>
+    `).join('');
+  }
+
+  renderCards(SECTION_1, 'grid1', 0);
+  renderCards(SECTION_2, 'grid2', 0.15);
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---- Auth logic ----
+  const PASSWORD = "00000000";
+  const loginScreen = document.getElementById('loginScreen');
+  const loginCard = document.getElementById('loginCard');
+  const loginForm = document.getElementById('loginForm');
+  const pwInput = document.getElementById('pwInput');
+  const loginError = document.getElementById('loginError');
+  const dashboard = document.getElementById('dashboard');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function enterPortal(){
+    loginScreen.classList.add('leaving');
+    dashboard.classList.remove('hidden');
+    dashboard.classList.add('entering');
+    setTimeout(() => { loginScreen.style.display = 'none'; }, 900);
+  }
+
+  function showLogin(){
+    loginScreen.style.display = 'flex';
+    requestAnimationFrame(() => loginScreen.classList.remove('leaving'));
+    dashboard.classList.add('hidden');
+    dashboard.classList.remove('entering');
+    pwInput.value = '';
+  }
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(pwInput.value === PASSWORD){
+      sessionStorage.setItem('portal_auth', '1');
+      loginError.classList.remove('show');
+      enterPortal();
+    } else {
+      loginError.classList.add('show');
+      loginCard.classList.remove('shake');
+      void loginCard.offsetWidth;
+      loginCard.classList.add('shake');
+      pwInput.value = '';
+      pwInput.focus();
+    }
+  });
+
+  logoutBtn.addEventListener('click', function(){
+    sessionStorage.removeItem('portal_auth');
+    showLogin();
+  });
+
+  if(sessionStorage.getItem('portal_auth') === '1'){
+    loginScreen.style.display = 'none';
+    dashboard.classList.remove('hidden');
+    dashboard.classList.add('entering');
+  } else {
+    pwInput.focus();
+  }
+</script>
+
+</body>
+</html>
